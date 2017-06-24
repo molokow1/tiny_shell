@@ -17,15 +17,21 @@ void sh_loop();
 char* sh_read_line();
 char** sh_parse_line(char *line);
 int sh_execute(char **tokens);
-
+int sh_execute_builtin_cmds(char **cmd);
 
 /* 
 Built-in commands
 */
 int sh_cd(char **cmd);
+int sh_ls(char **cmd);
+int is_builtin_cmds(char *cmd);
 
 
+/* 
+Helper Functions
+*/
 void print_tokens(char **tokens);
+void print_cwd();
 
 char* sh_read_line(){
 	char *line = NULL;
@@ -74,6 +80,14 @@ int sh_execute(char **tokens){
 		return 0;
 	}
 
+
+	if(strcmp(tokens[0], "cd") == 0){
+		if(!sh_cd(tokens)){
+			// print_cwd();
+		}
+	}else if(strcmp(tokens[0], "quit") == 0){
+		return 1;
+	}
 	return 0;
 }
 
@@ -88,6 +102,7 @@ int sh_cd(char **cmd){
 	}
 	return 1;
 }
+
 
 void print_tokens(char **tokens){
 	int pos = 0;
@@ -105,6 +120,19 @@ void print_tokens(char **tokens){
 }
 
 
+void print_cwd(){
+	char *cwd;
+	cwd = malloc(1024 * sizeof(char));
+	size_t buf_size = sizeof(char) * 1024;
+	if(getcwd(cwd, buf_size) != NULL){
+		fprintf(stdout,"%s$ ",cwd);
+	} else {
+		perror("getcwd() error");
+	}
+	free(cwd);
+}
+
+
 void sh_loop(){
 	int status = 0;
 	char *line;
@@ -112,16 +140,18 @@ void sh_loop(){
 	
 	while(status == 0){
 		//do stuff here
+		print_cwd();
 		line = sh_read_line();
-		printf("line: %s",line);
+		// printf("line: %s",line);
 		tokens = sh_parse_line(line);
-		print_tokens(tokens);
+		// print_tokens(tokens);
 		status = sh_execute(tokens);
 
 		free(line);
 		free(tokens);
 	}	
 }
+
 
 int main(int argc, char **argv){
 	printf("Tiny Shell opened, type help for instructions\n");
