@@ -18,7 +18,7 @@ char* sh_read_line();
 char** sh_parse_line(char *line);
 int sh_execute(char **tokens);
 int sh_execute_builtin_cmds(char **cmd);
-
+int sh_launch_proc(char **cmd);
 /* 
 Built-in commands
 */
@@ -82,15 +82,35 @@ int sh_execute(char **tokens){
 
 
 	if(strcmp(tokens[0], "cd") == 0){
-		if(!sh_cd(tokens)){
-			// print_cwd();
-		}
+		return sh_cd(tokens);
 	}else if(strcmp(tokens[0], "quit") == 0){
 		return 1;
+	}else{
+		return sh_launch_proc(tokens);
 	}
 	return 0;
 }
 
+int sh_launch_proc(char **cmd){
+	pid_t pid, wpid;
+
+	pid = fork();
+	int status = 0;
+
+	if (pid == 0){
+		if (execvp(cmd[0], cmd) == -1){
+			perror("tsh");
+		}
+		exit(EXIT_FAILURE);
+	} else if (pid < 0){
+		perror("tsh");
+	} else {
+		while(!WIFEXITED(status) && !WIFSIGNALED(status)){
+			wpid = waitpid(pid, &status, WUNTRACED);
+		}
+	}
+	return 0;
+}
 
 int sh_cd(char **cmd){
 	if(cmd[0] == NULL){
@@ -100,7 +120,7 @@ int sh_cd(char **cmd){
 			perror("tsh");
 		}
 	}
-	return 1;
+	return 0;
 }
 
 
