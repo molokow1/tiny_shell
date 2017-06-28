@@ -25,7 +25,7 @@ Built-in commands
 int sh_cd(char **cmd);
 int sh_ls(char **cmd);
 int is_builtin_cmds(char *cmd);
-
+int sh_print_help();
 
 /* 
 Helper Functions
@@ -85,6 +85,8 @@ int sh_execute(char **tokens){
 		return sh_cd(tokens);
 	}else if(strcmp(tokens[0], "quit") == 0){
 		return 1;
+	}else if(strcmp(tokens[0], "help") == 0){
+		return sh_print_help();
 	}else{
 		return sh_launch_proc(tokens);
 	}
@@ -120,6 +122,12 @@ int sh_cd(char **cmd){
 			perror("tsh");
 		}
 	}
+	return 0;
+}
+
+int sh_print_help(){
+	printf("Currently Built-in functions are: cd \n");
+	printf("However, you can spawn other processes normally\n");
 	return 0;
 }
 
