@@ -5,6 +5,18 @@
 #include <string.h>
 
 
+
+
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
+
 #define READ_BUFFER_SIZE 1024
 #define TOKEN_BUFFER_SIZE 64
 #define TOKEN_DELIM " \t\r\n\a"
@@ -153,7 +165,7 @@ void print_cwd(){
 	cwd = malloc(1024 * sizeof(char));
 	size_t buf_size = sizeof(char) * 1024;
 	if(getcwd(cwd, buf_size) != NULL){
-		fprintf(stdout,"%s$ ",cwd);
+		fprintf(stdout,"%s%s%s$ ",KGRN,cwd,KNRM);
 	} else {
 		perror("getcwd() error");
 	}
